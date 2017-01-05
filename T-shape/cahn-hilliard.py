@@ -22,7 +22,7 @@ dx = 2.0
 import sympy
 import fipy as fp
 import numpy as np
-import os
+import os, sys
 
 
 c, rho_s, c_alpha, c_beta = sympy.symbols("c_var rho_s c_alpha c_beta")
@@ -141,7 +141,8 @@ dt = 0.01
 dt_max = 1.0
 total_sweeps = 2
 tolerance = 1e-1
-total_steps = 2000
+total_steps = int(sys.argv[1])
+checkpoint = int(sys.argv[2])
 duration = 900.0
 
 
@@ -160,7 +161,7 @@ while elapsed < duration and steps < total_steps:
 #         print elapsed
         
         # anything in this loop will only be executed every 10 steps
-        if (steps%10==0):
+        if (steps % checkpoint == 0):
             print "Saving data: step " + str(steps)
             save_data(elapsed, c_var, f(c_var).cellVolumeAverage*mesh.numberOfCells*dx*dx, steps)
             
