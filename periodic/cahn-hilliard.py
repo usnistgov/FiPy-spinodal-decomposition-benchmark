@@ -13,6 +13,8 @@
 # 
 # Let's start by calculating $ \frac{ \partial^2 f_0 }{ \partial c^2} $ using sympy. It's easy for this case, but useful in the general case for taking care of difficult book keeping in phase field problems.
 
+from __future__ import print_function
+
 problem = '1'
 domain = 'a'
 nx = 100
@@ -29,8 +31,6 @@ c, rho_s, c_alpha, c_beta = sympy.symbols("c_var rho_s c_alpha c_beta")
 
 f_0 = rho_s * (c - c_alpha)**2 * (c_beta - c)**2
 
-
-print f_0
 
 
 sympy.diff(f_0, c, 1)
@@ -155,12 +155,8 @@ while elapsed < duration and steps < total_steps:
         res = eqn.sweep(c_var, dt=dt, solver=solver)
 
     if res < res0 * tolerance:
-#         print steps
-#         print elapsed
-        
         # anything in this loop will only be executed every 10 steps
         if (steps % checkpoint == 0):
-            print "Saving data: step " + str(steps)
             save_data(elapsed, c_var, f(c_var).cellVolumeAverage*mesh.numberOfCells*dx*dx, steps)
             
         steps += 1
@@ -172,15 +168,21 @@ while elapsed < duration and steps < total_steps:
         dt *= 0.8
         c_var[:] = c_var.old
     
-print 'elapsed_time:', elapsed
-
 
 # ## Free Energy Plots
 
 import glob
 newest = max(glob.iglob('data/1a100*.npz'), key=os.path.getctime)
-print newest
-
 
 times = np.load(newest)['time']
 f = np.load(newest)['f']
+
+print("data:")
+print("  # Gather simulation output")
+print("  - name: free_energy")
+print("    # JSON list of {time, energy} pairs")
+print("    values: [", end="")
+print("{{'time': {0}, 'energy': {1}}}".format(times[0], f[0]), end="")
+for i in range(len(times)-1):
+    print(", {{'time': {0}, 'energy': {1}}}".format(times[i+1], f[i+1]), end="")
+print("]")

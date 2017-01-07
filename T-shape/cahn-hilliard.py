@@ -13,6 +13,8 @@
 # 
 # Let's start by calculating $ \frac{ \partial^2 f_0 }{ \partial c^2} $ using sympy. It's easy for this case, but useful in the general case for taking care of difficult book keeping in phase field problems.
 
+from __future__ import print_function
+
 problem = '1'
 domain = 'c'
 nx = 100
@@ -186,3 +188,13 @@ print newest
 
 times = np.load(newest)['time']
 f = np.load(newest)['f']
+
+print("data:")
+print("  # Gather simulation output")
+print("  - name: free_energy")
+print("    # JSON list of {time, energy} pairs")
+print("    values: [", end="")
+print("{{'time': {0}, 'energy': {1}}}".format(times[0], f[0]), end="")
+for i in range(len(times)-1):
+    print(", {{'time': {0}, 'energy': {1}}}".format(times[i+1], f[i+1]), end="")
+print("]")

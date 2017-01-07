@@ -78,6 +78,7 @@ do
 	shift # pop first entry from command-line argument list, reduce $# by 1
 done
 
+echo
 echo "--------------------------------------------------------------------------"
 
 rm -rf ./*/meta.yml ./*/error.log
