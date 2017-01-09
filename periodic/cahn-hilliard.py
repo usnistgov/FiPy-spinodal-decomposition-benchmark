@@ -15,22 +15,26 @@
 
 from __future__ import print_function
 
+import fipy as fp
+import glob
+import json
+import numpy as np
+import os
+import sympy
+import sys
+from fipy.solvers.pysparse import LinearLUSolver as Solver
+
+
 problem = '1'
 domain = 'a'
 nx = 100
 dx = 2.0
-
-import sympy
-import fipy as fp
-import numpy as np
-import os, sys
 
 
 c, rho_s, c_alpha, c_beta = sympy.symbols("c_var rho_s c_alpha c_beta")
 
 
 f_0 = rho_s * (c - c_alpha)**2 * (c_beta - c)**2
-
 
 
 sympy.diff(f_0, c, 1)
@@ -145,7 +149,6 @@ duration = 900.0
 
 
 c_var.updateOld()
-from fipy.solvers.pysparse import LinearLUSolver as Solver
 solver = Solver()
 
 while elapsed < duration and steps < total_steps:
@@ -171,18 +174,26 @@ while elapsed < duration and steps < total_steps:
 
 # ## Free Energy Plots
 
-import glob
 newest = max(glob.iglob('data/1a100*.npz'), key=os.path.getctime)
 
 times = np.load(newest)['time']
 f = np.load(newest)['f']
+data = [dict(time=time, energy=energy) for time, energy in zip(times, f)]
 
+# Dump json to string
 print("data:")
 print("  # Gather simulation output")
 print("  - name: free_energy")
 print("    # JSON list of {time, energy} pairs")
-print("    values: [", end="")
-print("{{'time': {0}, 'energy': {1}}}".format(times[0], f[0]), end="")
-for i in range(len(times)-1):
-    print(", {{'time': {0}, 'energy': {1}}}".format(times[i+1], f[i+1]), end="")
-print("]")
+print("    values: ", end="")
+print(json.dumps(data))
+
+## Dump json to disk
+#with open('myjson.json', 'w') as fp:
+#    json.dump(data, fp, indent=2)
+#print("data:")
+#print("  # Gather simulation output")
+#print("  - name: free_energy")
+#print("    # JSON list of {time, energy} pairs")
+#print("    url: myjson.json")
+#print("    type: json")
