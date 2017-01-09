@@ -2,8 +2,10 @@
 # for Spinodal Decomposition benchmark problems
 # Questions/comments to trevor.keller@nist.gov (Trevor Keller)
 #
-# .travis.yml modified after
+# .travis.yml hybridized using
 #  https://github.com/wd15/extremefill2D/blob/master/.travis.yml
+# and
+# https://github.com/guyer/fipy/blob/travisize/.travis.yml
 
 ---
 language: python
@@ -12,23 +14,48 @@ notifications:
   email: false
 
 install:
-  - sudo apt-get update
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - if [[ $TRAVIS_OS_NAME -eq "linux" ]]; then
+      sudo apt-get update;
+    fi
+  - PY3K=$(echo "$TRAVIS_PYTHON_VERSION >= 3.0" | bc)
+  - export MINICONDA_OS_NAME=Linux
+  - if [[ $PY3K -eq 1 ]]; then
+      export MINICONDA_VERSION=3;
+    else
+      export MINICONDA_VERSION=;
+    fi
+  - wget https://repo.continuum.io/miniconda/${MINICONDA_VERSION}-latest-${MINICONDA_OS_NAME}-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
-  # Useful for debugging any issues with conda
-  - conda info -a
   - conda create -q -y -n test-environment python=2.7
   - source activate test-environment
-  - conda install -q -y -n test-environment numpy scipy sympy
+  # conda install -q -y -n test-environment numpy scipy sympy
+  - conda install --channel guyer numpy==1.9 nomkl pip gmsh
+  - if [[ $PY3K -eq 0 ]]; then
+      conda install --channel guyer numpy==1.9 nomkl pysparse mayavi openmpi trilinos mpi4py;
+    fi
   - pip install scikit-fmm
   - cd $TRAVIS_BUILD_DIR/fipy
+  - if [[ $PY3K -eq 1 ]]; then
+      2to3 --write . &> /dev/null;
+      # 2to3 --write --doctests_only . &> /dev/null;
+    fi
   # 2to3 --write .
   - python setup.py install
   - cd $TRAVIS_BUILD_DIR
+
+before_script:
+  # lack of display causes tests to abort at VtkViewer
+  # Workaround @ http://docs.enthought.com/mayavi/mayavi/tips.html#rendering-using-the-virtual-framebuffer
+  # and https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
+  - if [[ $TRAVIS_OS_NAME -eq "linux" ]]; then
+      export DISPLAY=:99.0;
+      sh -e /etc/init.d/xvfb start;
+      sleep 3;
+    fi
 
 script:
   - ./run_benchmarks.sh
