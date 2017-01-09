@@ -25,7 +25,7 @@ nSerRun=0
 
 # Set execution parameters
 ITERS=200
-INTER=10
+INTER=20
 CORES=1
 COREMAX=$(nproc)
 if [[ $CORES -gt $COREMAX ]]
@@ -144,7 +144,24 @@ do
 	# Run the example
 	rm -f test.*.dat
 	(/usr/bin/time -f "  - name: run_time\n    values: {'time': %e, 'unit': seconds}\n  - name: memory_usage\n    values: {'value': %M, 'unit': KB}" bash -c \
-	"python cahn-hilliard.py $ITERS $INTER 1>>meta.yml 2>>error.log") &>>meta.yml
+	"python cahn-hilliard.py $ITERS $INTER 1>>meta.yml 2>>error.log") &>>meta.yml &
+
+	# Travis CI quits after 10 minutes with no CLI activity. Give it an indication that things are running.
+	JOBID=$!
+	sleep 30
+	OLDFILES=$(ls -1 data/*.npz | wc -l)
+	while kill -0 "$JOBID" &>/dev/null
+	do
+		sleep 14
+		NEWFILES=$(ls -1 data/*.npz | wc -l)
+		if [[ $NEWFILES > $OLDFILES ]]
+		then
+			# A checkpoint was written while we slept. Tell the terminal.
+			echo -n '•'
+			OLDFILES=$NEWFILES
+		fi
+	done
+
 	# Return codes are not reliable. Save errors to disk for postmortem.
 
 	if [[ -f error.log ]] && [[ $(wc -w error.log) > 1 ]]

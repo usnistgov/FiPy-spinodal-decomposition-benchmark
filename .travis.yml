@@ -60,7 +60,7 @@ before_script:
     fi
 
 script:
-  - ./run_benchmarks.sh
+  - ./run_benchmarks.sh --long
 
 after_script:
   - for d in {periodic,no-flux,T-shape}; do cat $d/meta.yml; echo; done
