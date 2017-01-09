@@ -1,0 +1,4 @@
+[submodule "fipy"]
+	path = fipy
+	url = https://github.com/usnistgov/fipy.git
+	branch = develop
