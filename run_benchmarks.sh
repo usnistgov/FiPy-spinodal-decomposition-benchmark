@@ -133,7 +133,7 @@ do
 	echo "      url: https://github.com/usnistgov/FiPy-spinodal-decomposition-benchmark/tree/master/${exdirs[$i]}" >>meta.yml
 	echo "      version: ${repoversion}" >>meta.yml
 	echo "      branch: master" >>meta.yml
-	echo "      badge: https://travis-ci.org/tkphd/FiPy-spinodal-decomposition-benchmark.svg?branch=master" >>meta.yml
+	echo "      badge: https://travis-ci.org/usnistgov/FiPy-spinodal-decomposition-benchmark.svg?branch=master" >>meta.yml
 	echo "    details:" >>meta.yml
 	echo "      - name: mesh" >>meta.yml
 	echo "        value: uniform rectilinear" >>meta.yml
