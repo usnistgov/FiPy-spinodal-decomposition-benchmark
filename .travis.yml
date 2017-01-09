@@ -48,7 +48,7 @@ before_install:
   # doesn't have a public conda recipe
   - conda install --channel guyer numpy==1.9 nomkl pip gmsh
   - if [[ $PY3K -eq 0 ]]; then
-      conda install --channel guyer numpy==1.9 nomkl pysparse mayavi openmpi trilinos mpi4py;
+      conda install --channel guyer numpy==1.9 nomkl pysparse mayavi libgfortran openmpi trilinos mpi4py;
     fi
   # Useful for debugging any issues with conda
   - conda info -a
