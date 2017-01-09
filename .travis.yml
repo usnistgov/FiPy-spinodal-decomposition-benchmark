@@ -6,9 +6,13 @@
 #  https://github.com/wd15/extremefill2D/blob/master/.travis.yml
 # and
 # https://github.com/guyer/fipy/blob/travisize/.travis.yml
-
 ---
-language: python
+language:
+  - python
+os:
+  - linux
+env:
+  - TRAVIS_PYTHON_VERSION=2.7 MPIRUN= FIPY_SOLVERS=pysparse
 
 notifications:
   email: false
@@ -41,9 +45,8 @@ install:
   - cd $TRAVIS_BUILD_DIR/fipy
   - if [[ $PY3K -eq 1 ]]; then
       2to3 --write . &> /dev/null;
-      # 2to3 --write --doctests_only . &> /dev/null;
+      2to3 --write --doctests_only . &> /dev/null;
     fi
-  # 2to3 --write .
   - python setup.py install
   - cd $TRAVIS_BUILD_DIR
 
