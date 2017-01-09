@@ -41,9 +41,9 @@ install:
   - if [[ $PY3K -eq 0 ]]; then
       conda install --channel guyer numpy==1.9 nomkl pysparse mayavi openmpi trilinos mpi4py;
     fi
-  - pip install scikit-fmm
   - cd $TRAVIS_BUILD_DIR/fipy
   - if [[ $PY3K -eq 1 ]]; then
+      pip install scikit-fmm
       2to3 --write . &> /dev/null;
       2to3 --write --doctests_only . &> /dev/null;
     fi
