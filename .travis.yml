@@ -20,7 +20,7 @@ install:
   - conda info -a
   - conda create -q -y -n test-environment python=2.7
   - source activate test-environment
-  - conda install -q -y -n test-environment numpy scipy json
+  - conda install -q -y -n test-environment numpy scipy
   - pip install scikit-fmm
   - cd ~/fipy
   # 2to3 --write .
