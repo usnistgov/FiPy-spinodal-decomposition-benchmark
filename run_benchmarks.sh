@@ -84,6 +84,11 @@ echo "--------------------------------------------------------------------------
 rm -rf ./*/meta.yml ./*/error.log
 codeversion=$(python -c 'from fipy import __version__ as fv; print fv')
 repoversion=$(git rev-parse --verify HEAD)
+cpufreq=$(lscpu | grep "max MHz" | awk '{print $NF}')
+if [[ $cpufreq == "" ]]
+then
+	cpufreq=$(grep -m1 MHz /proc/cpuinfo | awk '{print $NF}')
+fi
 sumspace=32
 
 n=${#exdirs[@]}
@@ -112,7 +117,7 @@ do
 	echo "    # Optional hardware details" >>meta.yml
 	echo "    details:" >>meta.yml
 	echo "      - name: clock" >>meta.yml
-	echo "        value: $(grep -m1 MHz /proc/cpuinfo | awk '{print $NF}')" >>meta.yml
+	echo "        value: ${cpufreq}" >>meta.yml
 	echo "        units: MHz" >>meta.yml
 	echo "  software:" >>meta.yml
 	echo "    name: fipy" >>meta.yml
@@ -137,7 +142,7 @@ do
 
 	# Run the example
 	rm -f test.*.dat
-	(/usr/bin/time -f '  - name: run time\n    value: %e\n    unit: seconds\n  - name: memory usage\n    value: %M\n    unit: KB' bash -c \
+	(/usr/bin/time -f "  - name: run_time\n    values: {'time': %e, 'unit': seconds}\n  - name: memory_usage\n    values: {'value': %M, 'unit': KB}" bash -c \
 	"python cahn-hilliard.py $ITERS $INTER 1>>meta.yml 2>>error.log") &>>meta.yml
 	# Return codes are not reliable. Save errors to disk for postmortem.
 

@@ -33,9 +33,6 @@ c, rho_s, c_alpha, c_beta = sympy.symbols("c_var rho_s c_alpha c_beta")
 f_0 = rho_s * (c - c_alpha)**2 * (c_beta - c)**2
 
 
-print f_0
-
-
 sympy.diff(f_0, c, 2)
 
 
@@ -159,12 +156,8 @@ while elapsed < duration and steps < total_steps:
         res = eqn.sweep(c_var, dt=dt, solver=solver)
 
     if res < res0 * tolerance:
-#         print steps
-#         print elapsed
-        
         # anything in this loop will only be executed every 10 steps
         if (steps % checkpoint == 0):
-            print "Saving data: step " + str(steps)
             save_data(elapsed, c_var, f(c_var).cellVolumeAverage*mesh.numberOfCells*dx*dx, steps)
             
         steps += 1
@@ -176,14 +169,11 @@ while elapsed < duration and steps < total_steps:
         dt *= 0.8
         c_var[:] = c_var.old
     
-print 'elapsed_time:', elapsed
-
 
 # ## Free Energy Plots
 
 import glob
 newest = max(glob.iglob('data/1c100*.npz'), key=os.path.getctime)
-print newest
 
 
 times = np.load(newest)['time']
