@@ -22,7 +22,7 @@ install:
   - source activate test-environment
   - conda install -q -y -n test-environment numpy scipy
   - pip install scikit-fmm
-  - cd ~/fipy
+  - cd $TRAVIS_BUILD_DIR/fipy
   # 2to3 --write .
   - python setup.py install
   - cd $TRAVIS_BUILD_DIR
