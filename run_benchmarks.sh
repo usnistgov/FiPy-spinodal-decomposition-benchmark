@@ -24,8 +24,8 @@ nRunErr=0
 nSerRun=0
 
 # Set execution parameters
-ITERS=100
-INTER=10
+ITERS=120
+INTER=12
 CORES=1
 COREMAX=$(nproc)
 if [[ $CORES -gt $COREMAX ]]
@@ -145,7 +145,7 @@ do
 	then
 		mkdir data
 	fi
-	rm -f data/test.*.dat
+	rm -f data/test*.dat
 	(/usr/bin/time -f "  - name: run_time\n    values: {'time': %e, 'unit': seconds}\n  - name: memory_usage\n    values: {'value': %M, 'unit': KB}" bash -c \
 	"python cahn-hilliard.py $ITERS $INTER 1>>meta.yml 2>>error.log") &>>meta.yml &
 

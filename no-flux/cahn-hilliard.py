@@ -83,11 +83,6 @@ time_data = []
 cvar_data = []
 f_data = []
 
-# checks whether a folder for the data from this simulation exists
-# if not, creates one in the home directory
-if not os.path.exists("data"):
-    os.makedirs("data")
-
 def save_data(time, cvar, f, step):
     time_data.append(time)
     cvar_data.append(np.array(cvar.value))
@@ -143,7 +138,7 @@ while elapsed < duration and steps < total_steps:
 
 # ## Free Energy Plots
 
-newest = max(glob.iglob('data/1b100*.npz'), key=os.path.getctime)
+newest = max(glob.iglob('data/1{0}{1}*.npz'.format(domain, nx)), key=os.path.getctime)
 
 times = np.load(newest)['time']
 f = np.load(newest)['f']
