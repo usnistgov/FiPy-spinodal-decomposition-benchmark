@@ -10,8 +10,6 @@
 # 
 # $$ \frac{\partial c}{\partial t} = \nabla \cdot  \left[
 #        D \left( c \right) \left( \frac{ \partial^2 f_0 }{ \partial c^2} \nabla c - \kappa \nabla \nabla^2 c \right)   \right] $$
-# 
-# Let's start by calculating $ \frac{ \partial^2 f_0 }{ \partial c^2} $ using sympy. It's easy for this case, but useful in the general case for taking care of difficult book keeping in phase field problems.
 
 from __future__ import print_function
 
@@ -20,28 +18,18 @@ import glob
 import json
 import numpy as np
 import os
-import sympy
 import sys
 from fipy.solvers.pysparse import LinearLUSolver as Solver
 
 problem = '1'
 domain = 'c'
 nx = 100
-dx = 2.0
-
-
-c, rho_s, c_alpha, c_beta = sympy.symbols("c_var rho_s c_alpha c_beta")
-
-
-f_0 = rho_s * (c - c_alpha)**2 * (c_beta - c)**2
-
-
-sympy.diff(f_0, c, 2)
+dx = 1.0
 
 
 # The first step in implementing any problem in FiPy is to define the mesh. In this case, the T-shaped domain is constructed out of two rectangular `Grid2D` objects. No other boundary conditions are required.
 
-mesh = fp.Grid2D(Lx=20., Ly=100.0, nx=nx / 5, ny=nx) + (fp.Grid2D(Ly=20.0, Lx=100.0, nx=nx, ny=nx / 5) + [[-40],[100]])
+mesh = fp.Grid2D(Lx=20., Ly=100.0, dx=dx, dy=dx) + (fp.Grid2D(Ly=20.0, Lx=100.0, dx=dx, dy=dx) + [[-40],[100]])
 
 
 # The next step is to define the parameters and create a solution variable.
@@ -60,9 +48,7 @@ rho_s = 5.0
 
 c_var = fp.CellVariable(mesh=mesh, name=r"$c$", hasOld=True)
 
-
 c_var.mesh.cellCenters()
-
 
 # Now we need to define the initial conditions.
 # 
@@ -77,34 +63,18 @@ vals = np.linspace(-.1, 1.1, 1000)
 
 c_var = fp.CellVariable(mesh=mesh, name=r"$c$", hasOld=True)
 
-
 x , y = np.array(mesh.x), np.array(mesh.y)
 
 c_var[:] = c_0 + epsilon * (np.cos(0.105 * x) * np.cos(0.11 * y) + (np.cos(0.13 * x) * np.cos(0.087 * y))**2 + np.cos(0.025 * x - 0.15 * y) * np.cos(0.07 * x - 0.02 * y))
 
-
-
-# ## Define $f_0$
-
-# To define the equation with FiPy first define `f_0` in terms of FiPy. Recall `f_0` from above calculated using Sympy. Here we use the string representation and set it equal to `f_0_var` using the `exec` command.
-
-out = sympy.diff(f_0, c, 2)
-
-
-exec "f_0_var = " + repr(out)
-
-
-#f_0_var = -A + 3*B*(c_var - c_m)**2 + 3*c_alpha*(c_var - c_alpha)**2 + 3*c_beta*(c_var - c_beta)**2
-
-
 # bulk free energy density
 def f_0(c):
-    return rho_s*((c - c_alpha)**2)*((c_beta-c)**2)
+    return rho_s * (c - c_alpha)**2 * (c_beta-c)**2
 def f_0_var(c_var):
-    return 2*rho_s*((c_alpha - c_var)**2 + 4*(c_alpha - c_var)*(c_beta - c_var) + (c_beta - c_var)**2)
+    return 2 * rho_s * ((c_alpha - c_var)**2 + 4*(c_alpha - c_var)*(c_beta - c_var) + (c_beta - c_var)**2)
 # free energy
 def f(c):
-    return (f_0(c)+ .5*kappa*(c.grad.mag)**2)
+    return f_0(c)+ .5*kappa*(c.grad.mag)**2
 
 
 # Here, the elapsed time, total free energy, and concentration cell variable are saved to separate lists at designated time intervals. These lists are then updated in an .npz file in a directory of your choice.
@@ -158,7 +128,7 @@ while elapsed < duration and steps < total_steps:
         res = eqn.sweep(c_var, dt=dt, solver=solver)
 
     if res < res0 * tolerance:
-        # anything in this loop will only be executed every 10 steps
+        # anything in this loop will only be executed every $checkpoint steps
         if (steps % checkpoint == 0):
             save_data(elapsed, c_var, f(c_var).cellVolumeAverage*mesh.numberOfCells*dx*dx, steps)
             
@@ -197,4 +167,3 @@ print(json.dumps(data))
 #print("    # JSON list of {time, energy} pairs")
 #print("    url: myjson.json")
 #print("    type: json")
-

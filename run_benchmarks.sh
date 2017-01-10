@@ -24,8 +24,8 @@ nRunErr=0
 nSerRun=0
 
 # Set execution parameters
-ITERS=200
-INTER=20
+ITERS=100
+INTER=10
 CORES=1
 COREMAX=$(nproc)
 if [[ $CORES -gt $COREMAX ]]
@@ -56,15 +56,15 @@ do
 		;;
 		--short)
 			ITERS=$(($ITERS/10))
-			INTER=$ITERS
+			INTER=$(($ITERS/2))
 		;;
 		--long)
 			ITERS=$((10*$ITERS))
-			INTER=$(($ITERS/10))
+			INTER=$(($ITERS/100))
 		;;
 		--extra)
 			ITERS=$((100*$ITERS))
-			INTER=$(($ITERS/100))
+			INTER=$(($ITERS/1000))
 		;;
 		--np)
 			shift
@@ -83,6 +83,7 @@ echo "--------------------------------------------------------------------------
 
 rm -rf ./*/meta.yml ./*/error.log
 codeversion=$(python -c 'from fipy import __version__ as fv; print fv')
+hashversion=$(git submodule status | awk '{print $1}')
 repoversion=$(git rev-parse --verify HEAD)
 cpufreq=$(lscpu | grep "max MHz" | awk '{print $NF}')
 if [[ $cpufreq == "" ]]
@@ -109,7 +110,7 @@ do
 	echo "  summary: Serial workstation benchmark with FiPy, ${exdirs[$i]/\//} domain" >>meta.yml
 	echo "  author: Trevor Keller" >>meta.yml
 	echo "  email: trevor.keller@nist.gov" >>meta.yml
-	echo "  date: $(date -R)" >>meta.yml
+	echo "  timestamp: $(date -R)" >>meta.yml
 	echo "  hardware:" >>meta.yml
 	echo "    # Required hardware details" >>meta.yml
 	echo "    architecture: $(uname -m)" >>meta.yml
@@ -117,28 +118,26 @@ do
 	echo "    # Optional hardware details" >>meta.yml
 	echo "    details:" >>meta.yml
 	echo "      - name: clock" >>meta.yml
-	echo "        value: ${cpufreq}" >>meta.yml
-	echo "        units: MHz" >>meta.yml
+	echo "        values: ${cpufreq}" >>meta.yml
+	echo "        unit: MHz" >>meta.yml
 	echo "  software:" >>meta.yml
 	echo "    name: fipy" >>meta.yml
 	echo "    url: https://github.com/usnistgov/fipy" >>meta.yml
-	echo "    version: $(echo ${codeversion} | head -c 3)" >>meta.yml
+	echo "    version: '$(echo ${codeversion} | head -c 3)'" >>meta.yml
 	echo "    repo:" >>meta.yml
-	echo "      url: https://github.com/mesoscale/mmsp/tree/develop" >>meta.yml
-	echo "      version: ${codeversion}" >>meta.yml
-	echo "      branch: develop" >>meta.yml
+	echo "      url: https://github.com/usnistgov/fipy/tree/develop" >>meta.yml
+	echo "      version: '${hashversion}'" >>meta.yml
 	echo "  implementation:" >>meta.yml
 	echo "    end_condition: time limit" >>meta.yml
 	echo "    repo:" >>meta.yml
 	echo "      url: https://github.com/usnistgov/FiPy-spinodal-decomposition-benchmark/tree/master/${exdirs[$i]}" >>meta.yml
-	echo "      version: ${repoversion}" >>meta.yml
-	echo "      branch: master" >>meta.yml
-	echo "      badge: https://travis-ci.org/usnistgov/FiPy-spinodal-decomposition-benchmark.svg?branch=master" >>meta.yml
+	echo "      version: '${repoversion}'" >>meta.yml
+	echo "      # badge: https://travis-ci.org/usnistgov/FiPy-spinodal-decomposition-benchmark.svg?branch=master" >>meta.yml
 	echo "    details:" >>meta.yml
 	echo "      - name: mesh" >>meta.yml
-	echo "        value: uniform rectilinear" >>meta.yml
+	echo "        values: uniform rectilinear" >>meta.yml
 	echo "      - name: numerical_method" >>meta.yml
-	echo "        value: finite volume" >>meta.yml
+	echo "        values: finite volume" >>meta.yml
 	echo "" >>meta.yml
 
 	# Run the example
