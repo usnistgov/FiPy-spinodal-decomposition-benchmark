@@ -36,28 +36,15 @@ install:
   - conda update -q conda
   - conda create -q -y -n test-environment python=2.7
   - source activate test-environment
-  # conda install -q -y -n test-environment numpy scipy
   # conda install -q -y --channel guyer numpy==1.9 nomkl pysparse mayavi gmsh mpi4py openmpi scipy trilinos
-  - conda install -q -y nomkl numpy==1.9 scipy
-  - conda install -q -y --channel guyer pysparse 
-  - pip install scikit-fmm
+  - conda install -q -y --channel guyer nomkl pysparse scipy numpy=1.9
+  # pip install scikit-fmm
   - cd $TRAVIS_BUILD_DIR/fipy
   - if [[ $PY3K -eq 1 ]]; then
       2to3 --write . &> /dev/null;
-      2to3 --write --doctests_only . &> /dev/null;
     fi
   - python setup.py install
   - cd $TRAVIS_BUILD_DIR
-
-before_script:
-  # lack of display causes tests to abort at VtkViewer
-  # Workaround @ http://docs.enthought.com/mayavi/mayavi/tips.html#rendering-using-the-virtual-framebuffer
-  # and https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
-  - if [[ $TRAVIS_OS_NAME -eq "linux" ]]; then
-      export DISPLAY=:99.0;
-      sh -e /etc/init.d/xvfb start;
-      sleep 3;
-    fi
 
 script:
   - ./run_benchmarks.sh
