@@ -60,11 +60,11 @@ do
 		;;
 		--long)
 			ITERS=$((10*$ITERS))
-			INTER=$(($ITERS/50))
+			INTER=$(($ITERS/10))
 		;;
 		--extra)
 			ITERS=$((100*$ITERS))
-			INTER=$(($ITERS/500))
+			INTER=$(($ITERS/100))
 		;;
 		--np)
 			shift
