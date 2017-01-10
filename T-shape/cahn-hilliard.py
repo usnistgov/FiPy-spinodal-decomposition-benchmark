@@ -108,8 +108,8 @@ dt = 0.01
 dt_max = 1.0
 total_sweeps = 2
 tolerance = 1e-1
-total_steps = int(sys.argv[1])
-checkpoint = int(sys.argv[2])
+total_steps = 10*int(sys.argv[1])
+checkpoint = 10*int(sys.argv[2])
 duration = 900.0
 
 
@@ -143,7 +143,7 @@ newest = max(glob.iglob('data/1{0}{1}*.npz'.format(domain, nx)), key=os.path.get
 
 times = np.load(newest)['time']
 f = np.load(newest)['f']
-data = [dict(time=time, energy=energy) for time, energy in zip(times, f)]
+data = [dict(time=time, free_energy=energy) for time, energy in zip(times, f)]
 
 # Dump json to string
 print("data:")

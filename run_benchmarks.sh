@@ -24,8 +24,8 @@ nRunErr=0
 nSerRun=0
 
 # Set execution parameters
-ITERS=120
-INTER=12
+ITERS=200
+INTER=20
 CORES=1
 COREMAX=$(nproc)
 if [[ $CORES -gt $COREMAX ]]

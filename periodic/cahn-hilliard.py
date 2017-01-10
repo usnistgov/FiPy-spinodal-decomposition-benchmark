@@ -142,7 +142,7 @@ newest = max(glob.iglob('data/1{0}{1}*.npz'.format(domain, nx)), key=os.path.get
 
 times = np.load(newest)['time']
 f = np.load(newest)['f']
-data = [dict(time=time, energy=energy) for time, energy in zip(times, f)]
+data = [dict(time=time, free_energy=energy) for time, energy in zip(times, f)]
 
 # Dump json to string
 print("data:")
