@@ -141,7 +141,11 @@ do
 	echo "" >>meta.yml
 
 	# Run the example
-	rm -f test.*.dat
+	if [[ ! -e data ]]
+	then
+		mkdir data
+	fi
+	rm -f data/test.*.dat
 	(/usr/bin/time -f "  - name: run_time\n    values: {'time': %e, 'unit': seconds}\n  - name: memory_usage\n    values: {'value': %M, 'unit': KB}" bash -c \
 	"python cahn-hilliard.py $ITERS $INTER 1>>meta.yml 2>>error.log") &>>meta.yml &
 
