@@ -24,7 +24,7 @@ nRunErr=0
 nSerRun=0
 
 # Set execution parameters
-ITERS=250
+ITERS=225
 INTER=25
 CORES=1
 COREMAX=$(nproc)
