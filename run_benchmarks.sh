@@ -102,8 +102,7 @@ do
 
 	# Write simulation particulars. Should work on any Debian-flavored GNU/Linux OS.
 	echo "---" >>meta.yml
-	echo "benchmark:" >>meta.yml
-	echo "  id: 1${exlabels[$i]}" >>meta.yml
+	echo "  benchmark_id: 1${exlabels[$i]}" >>meta.yml
 	echo "" >>meta.yml
 	echo "metadata:" >>meta.yml
 	echo "  # Describe the runtime environment" >>meta.yml
@@ -119,7 +118,7 @@ do
 	echo "    details:" >>meta.yml
 	echo "      - name: clock" >>meta.yml
 	echo "        values: ${cpufreq}" >>meta.yml
-	echo "        unit: MHz" >>meta.yml
+	echo "        # unit: MHz" >>meta.yml
 	echo "  software:" >>meta.yml
 	echo "    name: fipy" >>meta.yml
 	echo "    url: https://github.com/usnistgov/fipy" >>meta.yml
@@ -128,7 +127,7 @@ do
 	echo "      url: https://github.com/usnistgov/fipy/tree/develop" >>meta.yml
 	echo "      version: '${hashversion}'" >>meta.yml
 	echo "  implementation:" >>meta.yml
-	echo "    end_condition: time limit" >>meta.yml
+	echo "    end_condition: time limit, Travis CI runs die after 50 minutes total" >>meta.yml
 	echo "    repo:" >>meta.yml
 	echo "      url: https://github.com/usnistgov/FiPy-spinodal-decomposition-benchmark/tree/master/${exdirs[$i]}" >>meta.yml
 	echo "      version: '${repoversion}'" >>meta.yml
