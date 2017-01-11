@@ -85,10 +85,10 @@ rm -rf ./*/meta.yml ./*/error.log
 codeversion=$(python -c 'from fipy import __version__ as fv; print fv')
 hashversion=$(git submodule status | awk '{print $1}')
 repoversion=$(git rev-parse --verify HEAD)
-cpufreq=$(lscpu | grep "max MHz" | awk '{print $NF}')
+cpufreq=$(lscpu | grep "max MHz" | awk '{print $NF/1000}')
 if [[ $cpufreq == "" ]]
 then
-	cpufreq=$(grep -m1 MHz /proc/cpuinfo | awk '{print $NF}')
+	cpufreq=$(grep -m1 MHz /proc/cpuinfo | awk '{print $NF/1000}')
 fi
 sumspace=32
 
@@ -118,7 +118,7 @@ do
 	echo "    details:" >>meta.yml
 	echo "      - name: clock" >>meta.yml
 	echo "        values: ${cpufreq}" >>meta.yml
-	echo "        # unit: MHz" >>meta.yml
+	echo "        # unit: GHz" >>meta.yml
 	echo "  software:" >>meta.yml
 	echo "    name: fipy" >>meta.yml
 	echo "    url: https://github.com/usnistgov/fipy" >>meta.yml
