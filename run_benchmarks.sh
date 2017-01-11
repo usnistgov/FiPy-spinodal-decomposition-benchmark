@@ -44,7 +44,7 @@ exlabels=("a" \
 "b" \
 "c")
 
-echo -n "Building problems in serial and parallel"
+echo -n "Executing problems in serial"
 
 while [[ $# -gt 0 ]]
 do
@@ -102,11 +102,11 @@ do
 
 	# Write simulation particulars. Should work on any Debian-flavored GNU/Linux OS.
 	echo "---" >>meta.yml
-	echo "  benchmark_id: 1${exlabels[$i]}" >>meta.yml
+	echo "benchmark_id: 1${exlabels[$i]}" >>meta.yml
 	echo "" >>meta.yml
 	echo "metadata:" >>meta.yml
 	echo "  # Describe the runtime environment" >>meta.yml
-	echo "  summary: Serial workstation benchmark with FiPy, ${exdirs[$i]/\//} domain" >>meta.yml
+	echo "  summary: Serial Travis-CI benchmark with FiPy, ${exdirs[$i]/\//} domain" >>meta.yml
 	echo "  author: Trevor Keller" >>meta.yml
 	echo "  email: trevor.keller@nist.gov" >>meta.yml
 	echo "  timestamp: $(date -R)" >>meta.yml
@@ -122,15 +122,15 @@ do
 	echo "  software:" >>meta.yml
 	echo "    name: fipy" >>meta.yml
 	echo "    url: https://github.com/usnistgov/fipy" >>meta.yml
-	echo "    version: '$(echo ${codeversion} | head -c 3)'" >>meta.yml
+	echo "    version: \"$(echo ${codeversion} | head -c 3)\"" >>meta.yml
 	echo "    repo:" >>meta.yml
 	echo "      url: https://github.com/usnistgov/fipy/tree/develop" >>meta.yml
-	echo "      version: '${hashversion}'" >>meta.yml
+	echo "      version: \"${hashversion}\"" >>meta.yml
 	echo "  implementation:" >>meta.yml
 	echo "    end_condition: time limit, Travis CI runs die after 50 minutes total" >>meta.yml
 	echo "    repo:" >>meta.yml
 	echo "      url: https://github.com/usnistgov/FiPy-spinodal-decomposition-benchmark/tree/master/${exdirs[$i]}" >>meta.yml
-	echo "      version: '${repoversion}'" >>meta.yml
+	echo "      version: \"${repoversion}\"" >>meta.yml
 	echo "      # badge: https://travis-ci.org/usnistgov/FiPy-spinodal-decomposition-benchmark.svg?branch=master" >>meta.yml
 	echo "    details:" >>meta.yml
 	echo "      - name: mesh" >>meta.yml
@@ -145,7 +145,7 @@ do
 		mkdir data
 	fi
 	rm -f data/test*.dat
-	(/usr/bin/time -f "  - name: run_time\n    values: {'time': %e, 'unit': seconds}\n  - name: memory_usage\n    values: {'value': %M, 'unit': KB}" bash -c \
+	(/usr/bin/time -f "  - name: run_time\n    values: {\"time\": %e, \"unit\": seconds}\n  - name: memory_usage\n    values: {\"value\": %M, \"unit\": KB}" bash -c \
 	"python cahn-hilliard.py $ITERS $INTER 1>>meta.yml 2>>error.log") &>>meta.yml &
 
 	# Travis CI quits after 10 minutes with no CLI activity. Give it an indication that things are running.

@@ -149,9 +149,11 @@ data = [dict(time=time, free_energy=energy) for time, energy in zip(times, f)]
 print("data:")
 print("  # Gather simulation output")
 print("  - name: free_energy")
-print("    # JSON list of {time, energy} pairs")
-print("    values: ", end="")
-print(json.dumps(data))
+print("    values:")
+print(json.dumps(data, indent=2))
+print("    transform:")
+print("      - type: filter")
+print("        test: \"datum.time > 0.01\"")
 
 ## Dump json to disk
 #with open('myjson.json', 'w') as fp:
