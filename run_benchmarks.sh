@@ -145,7 +145,9 @@ do
 		mkdir data
 	fi
 	rm -f data/test*.dat
-	(/usr/bin/time -f "  - name: run_time\n    values: {\"time\": %e, \"unit\": seconds}\n  - name: memory_usage\n    values: {\"value\": %M, \"unit\": KB}" bash -c \
+	# Note: final simulation time is written by the program,
+    # so this script finishes the partial runtime block output
+	(/usr/bin/time -f "          \"time\": %e # seconds\n        }\n      ]\n  - name: memory_usage\n    values:\n      [\n        {\n          \"value\": %M,\n          \"unit\": KB\n        }\n      ]" bash -c \
 	"python cahn-hilliard.py $ITERS $INTER 1>>meta.yml 2>>error.log") &>>meta.yml &
 
 	# Travis CI quits after 10 minutes with no CLI activity. Give it an indication that things are running.

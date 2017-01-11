@@ -45,7 +45,7 @@ c_0 = 0.5
 epsilon = 0.01
 rho_s = 5.0
 
-c_var = fp.CellVariable(mesh=mesh, name=r"$c$", hasOld=True)
+c_var = fp.CellVariable(mesh=mesh, name=r'$c$', hasOld=True)
 
 c_var.mesh.cellCenters()
 
@@ -60,7 +60,7 @@ c_var.mesh.cellCenters()
 # array of sample c-values: used in f versus c plot
 vals = np.linspace(-.1, 1.1, 1000)
 
-c_var = fp.CellVariable(mesh=mesh, name=r"$c$", hasOld=True)
+c_var = fp.CellVariable(mesh=mesh, name=r'$c$', hasOld=True)
 
 x , y = np.array(mesh.x), np.array(mesh.y)
 
@@ -88,7 +88,7 @@ def save_data(time, cvar, f, step):
     cvar_data.append(np.array(cvar.value))
     f_data.append(f.value)
     
-    file_name = "data/1{0}{1}_{2}".format(domain, nx, str(step).rjust(5, '0'))
+    file_name = 'data/1{0}{1}_{2}'.format(domain, nx, str(step).rjust(5, '0'))
     np.savez(file_name, time = time_data, c_var = cvar_data, f = f_data)
 
 
@@ -145,21 +145,28 @@ f = np.load(newest)['f']
 data = [dict(time=time, free_energy=energy) for time, energy in zip(times, f)]
 
 # Dump json to string
-print("data:")
-print("  # Gather simulation output")
-print("  - name: free_energy")
-print("    values:")
+print('data:')
+print('  # Gather simulation output')
+print('  - name: free_energy')
+print('    values:')
 print(json.dumps(data, indent=2))
-print("    transform:")
-print("      - type: filter")
-print("        test: \"datum.time > 0.01\"")
+print('    transform:')
+print('      - type: filter')
+print('        test: "datum.time > 0.01"')
+
+# Start writing run_time block, to be finished by bash
+print('  - name: run_time')
+print('    values:')
+print('      [')
+print('        {')
+print('          "sim_time": {0},'.format(sorted(times, reverse=True)[0])) 
 
 ## Dump json to disk
 #with open('myjson.json', 'w') as fp:
 #    json.dump(data, fp, indent=2)
-#print("data:")
-#print("  # Gather simulation output")
-#print("  - name: free_energy")
-#print("    # JSON list of {time, energy} pairs")
-#print("    url: myjson.json")
-#print("    type: json")
+#print('data:')
+#print('  # Gather simulation output')
+#print('  - name: free_energy')
+#print('    # JSON list of {time, energy} pairs')
+#print('    url: myjson.json')
+#print('    type: json')
